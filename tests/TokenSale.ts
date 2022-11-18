@@ -54,9 +54,9 @@ describe("NFT Shop", async () => {
       beforeEach(async () => {
         balanceBefore = await accounts[1].getBalance();
         const tx = await tokenSaleContract.connect(accounts[1]).
-        purchaseTokens({
-          value: ETH_SENT
-        });
+          purchaseTokens({
+            value: ETH_SENT
+          });
         const receipt = await tx.wait();
         const gasUsage = receipt.gasUsed;
         const gasPrice = receipt.effectiveGasPrice;
@@ -76,17 +76,19 @@ describe("NFT Shop", async () => {
         );
         expect(balanceBN).to.eq(ETH_SENT.div(TOKEN_ETH_RATIO));
       });
+
+      describe("When a user burns an ERC20 at the Token contract", async () => {
+        it("gives the correct amount of ETH", async () => {
+          throw new Error("Not implemented");
+        });
+
+        it("burns the correct amount of tokens", async () => {
+          throw new Error("Not implemented");
+        });
+      });
+
     });
 
-    // describe("When a user burns an ERC20 at the Token contract", async () => {
-    //   it("gives the correct amount of ETH", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    //
-    //   it("burns the correct amount of tokens", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    // });
 
     // describe("When a user purchase a NFT from the Shop contract", async () => {
     //   it("charges the correct amount of ETH", async () => {
