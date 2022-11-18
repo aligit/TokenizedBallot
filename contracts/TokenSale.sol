@@ -5,6 +5,12 @@ interface IMyERC20Token {
     function mint(address to, uint256 amount) external;
 
     function burnFrom(address account, uint256 amount) external;
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) external;
 }
 
 interface IMyERC721Token {
@@ -15,15 +21,18 @@ interface IMyERC721Token {
 
 contract TokenSale {
     uint256 public ratio;
+    uint256 public price;
     IMyERC20Token public paymentToken;
     IMyERC721Token public nftContract;
 
     constructor(
+        uint256 _price,
         uint256 _ratio,
         address _paymentToken,
         address _nftContract
     ) {
         ratio = _ratio;
+        price = _price;
         paymentToken = IMyERC20Token(_paymentToken);
         nftContract = IMyERC721Token(_nftContract);
     }
@@ -38,5 +47,10 @@ contract TokenSale {
     function burnTokens(uint256 amount) external {
         paymentToken.burnFrom(msg.sender, amount);
         payable(msg.sender).transfer(amount * ratio);
+    }
+
+    function purchaseNFT(uint256 tokenId) external {
+        paymentToken.transferFrom(msg.sender, address(this), price);
+        nftContract.safeMint(msg.sender, tokenId);
     }
 }
