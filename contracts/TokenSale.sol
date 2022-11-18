@@ -3,6 +3,8 @@ pragma solidity >=0.7.0 <0.9.0;
 
 interface IMyERC20Token {
     function mint(address to, uint256 amount) external;
+
+    function burnFrom(address account, uint256 amount) external;
 }
 
 contract TokenSale {

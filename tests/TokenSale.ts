@@ -78,8 +78,19 @@ describe("NFT Shop", async () => {
       });
 
       describe("When a user burns an ERC20 at the Token contract", async () => {
+
+        beforeEach(async () => {
+          const tx = await paymentTokenContract.connect(accounts[1]).transfer(
+            tokenSaleContract.address,
+            ETH_SENT.div(TOKEN_ETH_RATIO));
+          await tx.wait();
+          const balanceAfter = paymentTokenContract.balanceOf(
+            tokenSaleContract.address
+          );
+          console.log(balanceAfter);
+        });
+
         it("gives the correct amount of ETH", async () => {
-          throw new Error("Not implemented");
         });
 
         it("burns the correct amount of tokens", async () => {
