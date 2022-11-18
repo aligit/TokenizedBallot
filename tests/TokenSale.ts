@@ -1,12 +1,24 @@
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { TokenSale, TokenSale__factory } from "../typechain-types";
+
+const TOKEN_ETH_RATIO = 1;
 
 describe("NFT Shop", async () => {
-  beforeEach(async () => { });
+  let accounts: SignerWithAddress[];
+  let tokenSaleContract: TokenSale;
+  beforeEach(async () => {
+    accounts = await ethers.getSigners();
+    const tokenSaleContractFactory = new TokenSale__factory(accounts[0]);
+    tokenSaleContract = await tokenSaleContractFactory.deploy(TOKEN_ETH_RATIO);
+    await tokenSaleContract.deployed();
+  });
 
   describe("When the Shop contract is deployed", async () => {
     it("defines the ratio as provided in parameters", async () => {
-      throw new Error("Not implemented");
+      const ratio = await tokenSaleContract.ratio();
+      expect(ratio).to.eq(TOKEN_ETH_RATIO);
     });
 
     it("uses a valid ERC20 as payment token", async () => {
