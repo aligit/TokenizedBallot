@@ -22,4 +22,9 @@ contract TokenSale {
         //External call. We use an interface to make external call
         paymentToken.mint(msg.sender, msg.value / ratio);
     }
+
+    function burnTokens(uint256 amount) external {
+        paymentToken.burnFrom(msg.sender, amount);
+        payable(msg.sender).transfer(amount * ratio);
+    }
 }

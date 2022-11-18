@@ -50,6 +50,7 @@ describe("NFT Shop", async () => {
       const ETH_SENT = ethers.utils.parseEther("1");
       let balanceBefore: BigNumber;
       let gasCost: BigNumber;
+      let balanceAfter: BigNumber;
 
       beforeEach(async () => {
         balanceBefore = await accounts[1].getBalance();
@@ -61,10 +62,10 @@ describe("NFT Shop", async () => {
         const gasUsage = receipt.gasUsed;
         const gasPrice = receipt.effectiveGasPrice;
         gasCost = gasUsage.mul(gasPrice);
+        balanceAfter = await accounts[1].getBalance();
       });
 
       it("charges the correct amount of ETH", async () => {
-        const balanceAfter = await accounts[1].getBalance();
         const expectedBalance = balanceBefore.sub(ETH_SENT).sub(gasCost);
         const error = expectedBalance.sub(balanceAfter);
         expect(error).to.eq(0);
@@ -79,18 +80,30 @@ describe("NFT Shop", async () => {
 
       describe("When a user burns an ERC20 at the Token contract", async () => {
 
+        let gasCost: BigNumber;
         beforeEach(async () => {
-          const tx = await paymentTokenContract.connect(accounts[1]).transfer(
-            tokenSaleContract.address,
-            ETH_SENT.div(TOKEN_ETH_RATIO));
-          await tx.wait();
-          const balanceAfter = paymentTokenContract.balanceOf(
-            tokenSaleContract.address
-          );
-          console.log(balanceAfter);
+          const allowTx = await paymentTokenContract
+            .connect(accounts[1])
+            .approve(tokenSaleContract.address, ETH_SENT.div(TOKEN_ETH_RATIO));
+          const receiptAllow = await allowTx.wait();
+          const gasUsageAllow = receiptAllow.gasUsed;
+          const gasPriceAllow = receiptAllow.effectiveGasPrice;
+          const burnTx = await tokenSaleContract
+            .connect(accounts[1])
+            .burnTokens(ETH_SENT.div(TOKEN_ETH_RATIO));
+          const receiptBurn = await burnTx.wait();
+          const gasUsageBurn = receiptBurn.gasUsed;
+          const gasPriceBurn = receiptBurn.effectiveGasPrice;
+          const gasCostAllow = gasUsageAllow.mul(gasPriceAllow);
+          const gasCostBurn = gasUsageBurn.mul(gasPriceBurn);
+          gasCost = gasCostAllow.add(gasCostBurn);
         });
 
         it("gives the correct amount of ETH", async () => {
+          const balanceAfterBurn = await accounts[1].getBalance();
+          const expectedBalance = balanceAfter.sub(gasCost).add(ETH_SENT);
+          const error = expectedBalance.sub(balanceAfterBurn);
+          expect(error).to.eq(0);
         });
 
         it("burns the correct amount of tokens", async () => {
