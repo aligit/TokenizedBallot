@@ -39,17 +39,28 @@ describe("NFT Shop", async () => {
         .reverted;
     });
 
-    // describe("When a user purchase an ERC20 from the Token contract", async () => {
-    //   beforeEach(async () => { });
-    //
-    //   it("charges the correct amount of ETH", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    //
-    //   it("gives the correct amount of tokens", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    // });
+    describe("When a user purchase an ERC20 from the Token contract", async () => {
+      const ETH_SENT = ethers.utils.parseEther("1");
+
+      beforeEach(async () => {
+        // let contractBalance = await ethers.provider.getBalance(
+        //   tokenSaleContract.address
+        // );
+        // console.log(contractBalance);
+        const tx = await tokenSaleContract.purchaseTokens({
+          value: ETH_SENT
+        });
+        await tx.wait();
+      });
+
+      it("charges the correct amount of ETH", async () => {
+        throw new Error("Not implemented");
+      });
+
+      it("gives the correct amount of tokens", async () => {
+        throw new Error("Not implemented");
+      });
+    });
 
     // describe("When a user burns an ERC20 at the Token contract", async () => {
     //   it("gives the correct amount of ETH", async () => {
