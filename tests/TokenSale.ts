@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import { MyERC20Token, MyERC20Token__factory, TokenSale, TokenSale__factory } from "../typechain-types";
 
@@ -22,6 +23,12 @@ describe("NFT Shop", async () => {
 
     );
     await tokenSaleContract.deployed();
+    const MINTER_ROLE = await paymentTokenContract.MINTER_ROLE();
+    const giveRoleTx = await paymentTokenContract.grantRole(
+      MINTER_ROLE,
+      tokenSaleContract.address
+    );
+    await giveRoleTx;
   });
 
   describe("When the Shop contract is deployed", async () => {
@@ -41,24 +48,33 @@ describe("NFT Shop", async () => {
 
     describe("When a user purchase an ERC20 from the Token contract", async () => {
       const ETH_SENT = ethers.utils.parseEther("1");
+      let balanceBefore: BigNumber;
+      let gasCost: BigNumber;
 
       beforeEach(async () => {
-        // let contractBalance = await ethers.provider.getBalance(
-        //   tokenSaleContract.address
-        // );
-        // console.log(contractBalance);
-        const tx = await tokenSaleContract.purchaseTokens({
+        balanceBefore = await accounts[1].getBalance();
+        const tx = await tokenSaleContract.connect(accounts[1]).
+        purchaseTokens({
           value: ETH_SENT
         });
-        await tx.wait();
+        const receipt = await tx.wait();
+        const gasUsage = receipt.gasUsed;
+        const gasPrice = receipt.effectiveGasPrice;
+        gasCost = gasUsage.mul(gasPrice);
       });
 
       it("charges the correct amount of ETH", async () => {
-        throw new Error("Not implemented");
+        const balanceAfter = await accounts[1].getBalance();
+        const expectedBalance = balanceBefore.sub(ETH_SENT).sub(gasCost);
+        const error = expectedBalance.sub(balanceAfter);
+        expect(error).to.eq(0);
       });
 
       it("gives the correct amount of tokens", async () => {
-        throw new Error("Not implemented");
+        const balanceBN = await paymentTokenContract.balanceOf(
+          accounts[1].address
+        );
+        expect(balanceBN).to.eq(ETH_SENT.div(TOKEN_ETH_RATIO));
       });
     });
 
