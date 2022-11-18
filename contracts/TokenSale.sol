@@ -7,13 +7,25 @@ interface IMyERC20Token {
     function burnFrom(address account, uint256 amount) external;
 }
 
+interface IMyERC721Token {
+    function safeMint(address to, uint256 tokenId) external;
+
+    function burn(uint256 tokenId) external;
+}
+
 contract TokenSale {
     uint256 public ratio;
     IMyERC20Token public paymentToken;
+    IMyERC721Token public nftContract;
 
-    constructor(uint256 _ratio, address _paymentToken) {
+    constructor(
+        uint256 _ratio,
+        address _paymentToken,
+        address _nftContract
+    ) {
         ratio = _ratio;
         paymentToken = IMyERC20Token(_paymentToken);
+        nftContract = IMyERC721Token(_nftContract);
     }
 
     function purchaseTokens() external payable {
