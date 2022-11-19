@@ -2,33 +2,45 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
-import { MyERC20Token, MyERC20Token__factory, TokenSale, TokenSale__factory } from "../typechain-types";
+import { MyERC20Token, MyERC20Token__factory, MyERC721Token, MyERC721Token__factory, TokenSale, TokenSale__factory } from "../typechain-types";
 
 const TOKEN_ETH_RATIO = 1;
+const NFT_PRICE = ethers.utils.parseEther("0.2");
 
 describe("NFT Shop", async () => {
+  const ETH_SENT = ethers.utils.parseEther("1");
   let accounts: SignerWithAddress[];
   let tokenSaleContract: TokenSale;
   let paymentTokenContract: MyERC20Token;
+  let nftContract: MyERC721Token;
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
     const erc20TokenFactory = new MyERC20Token__factory(accounts[0]);
+    const erc721TokenFactory = new MyERC721Token__factory(accounts[0]);
     const tokenSaleContractFactory = new TokenSale__factory(accounts[0]);
     paymentTokenContract = await erc20TokenFactory.deploy();
     await paymentTokenContract.deployed();
+    nftContract = await erc721TokenFactory.deploy();
+    await nftContract.deployed();    
     tokenSaleContract = await tokenSaleContractFactory.deploy(
       TOKEN_ETH_RATIO,
-      paymentTokenContract.address
-
+      NFT_PRICE,
+      paymentTokenContract.address,
+      nftContract.address
     );
     await tokenSaleContract.deployed();
     const MINTER_ROLE = await paymentTokenContract.MINTER_ROLE();
-    const giveRoleTx = await paymentTokenContract.grantRole(
+    const giveRoleTx1 = await paymentTokenContract.grantRole(
       MINTER_ROLE,
       tokenSaleContract.address
     );
-    await giveRoleTx;
+    await giveRoleTx1;
+    const giveRoleTx2 = await nftContract.grantRole(
+      MINTER_ROLE,
+      tokenSaleContract.address
+    );
+    await giveRoleTx2;
   });
 
   describe("When the Shop contract is deployed", async () => {
@@ -47,7 +59,6 @@ describe("NFT Shop", async () => {
     });
 
     describe("When a user purchase an ERC20 from the Token contract", async () => {
-      const ETH_SENT = ethers.utils.parseEther("1");
       let balanceBefore: BigNumber;
       let gasCost: BigNumber;
       let balanceAfter: BigNumber;
@@ -114,23 +125,44 @@ describe("NFT Shop", async () => {
     });
 
 
-    // describe("When a user purchase a NFT from the Shop contract", async () => {
-    //   it("charges the correct amount of ETH", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    //
-    //   it("updates the owner account correctly", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    //
-    //   it("update the pool account correctly", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    //
-    //   it("favors the pool with the rounding", async () => {
-    //     throw new Error("Not implemented");
-    //   });
-    // });
+     describe("When a user purchase a NFT from the Shop contract", async () => {
+      const NFT_ID = 42;
+      let tokenBalanceBefore: BigNumber
+
+      beforeEach(async () => {
+        const nftOwner = await nftContract.ownerOf(NFT_ID);
+        console.log(nftOwner);
+        tokenBalanceBefore = await paymentTokenContract.balanceOf(accounts[1].address);
+        const allowTx = await paymentTokenContract
+        .connect(accounts[1])
+        .approve(tokenSaleContract.address, NFT_PRICE);
+        allowTx.wait();
+        const purchaseTx = await tokenSaleContract.connect(accounts[1]).purchaseNFT(NFT_ID);
+        await purchaseTx.wait();
+      })
+       it("charges the correct amount of tokens", async () => {
+         const tokenBalanceAfter = await paymentTokenContract.balanceOf(accounts[1].address);
+         const expectedTokenBalanceAfter = tokenBalanceBefore.sub(NFT_PRICE);
+         expect(tokenBalanceAfter).to.eq(expectedTokenBalanceAfter);
+       });
+
+       it("Gives the right NFT", async () => {
+        const nftOwner = await nftContract.ownerOf(NFT_ID);
+        expect(nftOwner).to.eq(accounts[0].address)
+      });
+    
+       it("updates the owner account correctly", async () => {
+         throw new Error("Not implemented");
+       });
+    
+       it("update the pool account correctly", async () => {
+         throw new Error("Not implemented");
+       });
+    
+       it("favors the pool with the rounding", async () => {
+         throw new Error("Not implemented");
+       });
+     });
 
     // describe("When a user burns their NFT at the Shop contract", async () => {
     //   it("gives the correct amount of ERC20 tokens", async () => {
