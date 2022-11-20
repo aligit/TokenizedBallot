@@ -26,8 +26,8 @@ contract TokenSale {
     IMyERC721Token public nftContract;
 
     constructor(
-        uint256 _price,
         uint256 _ratio,
+        uint256 _price,
         address _paymentToken,
         address _nftContract
     ) {
