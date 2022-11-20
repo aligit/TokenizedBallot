@@ -22,6 +22,10 @@ async function main() {
   console.log(`after the mint, the voter has ${voterTokenBalance} decimals of balance\n`)
   let votePower = await contract.getVotes(voter.address);
   console.log(`after the mint, the voter has ${votePower} decimals of vote Power\n`)
+  const delegateTx = await contract.connect(voter).delegate(voter.address);
+  await delegateTx.wait();
+  votePower = await contract.getVotes(voter.address);
+  console.log(`after the self delegation the voter has ${votePower} decimals of vote Power\n`)
 }
 
 main().catch((error) => {
