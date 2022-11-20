@@ -26,6 +26,14 @@ async function main() {
   await delegateTx.wait();
   votePower = await contract.getVotes(voter.address);
   console.log(`after the self delegation the voter has ${votePower} decimals of vote Power\n`)
+  //when I've 1000 vote power I can vote and sell those tokens. This is
+  //considered double spend. I can vote and sell those votes.. This is problem
+  const transferTx = await contract.connect(voter).transfer(other.address, TEST_MINT_VALUE.div(2));
+  await transferTx.wait();
+  votePower = await contract.getVotes(voter.address);
+  console.log(`after the transfer, the voter has ${votePower} decimals of vote Power\n`)
+  votePower = await contract.getVotes(other.address);
+  console.log(`after the transfer, the other has ${votePower} decimals of vote Power\n`)
 }
 
 main().catch((error) => {
