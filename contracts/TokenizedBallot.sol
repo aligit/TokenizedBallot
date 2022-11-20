@@ -1,23 +1,44 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
 
-contract Ballot {
+import "./ERC20Votes.sol";
+
+contract TokenizedBallot {
+    MyToken public voteToken;
+
+    uint256 public targetBlock;
+
     struct Proposal {
-        bytes32 name; // short name (up to 32 bytes)
-        uint256 voteCount; // number of accumulated votes
+        bytes32 name;
+        uint256 voteCount;
     }
 
     Proposal[] public proposals;
 
-    constructor(bytes32[] memory proposalNames) {
+    mapping(address => uint256) public votePowerSpent;
+
+    constructor(
+        bytes32[] memory proposalNames,
+        address _voteToken,
+        uint256 _targetBlock
+    ) {
+        targetBlock = _targetBlock;
+        voteToken = MyToken(_voteToken);
         for (uint256 i = 0; i < proposalNames.length; i++) {
             proposals.push(Proposal({name: proposalNames[i], voteCount: 0}));
         }
     }
 
     function vote(uint256 proposal, uint256 amount) external {
-        // TODO: implement the logic
+        require(votePower(msg.sender) >= amount, "Not enough vote power");
         proposals[proposal].voteCount += amount;
+        votePowerSpent[msg.sender] += amount;
+    }
+
+    function votePower(address account) public view returns (uint256) {
+        return
+            voteToken.getPastVotes(account, targetBlock) -
+            votePowerSpent[account];
     }
 
     function winningProposal() public view returns (uint256 winningProposal_) {
