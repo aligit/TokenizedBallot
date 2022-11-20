@@ -20,7 +20,8 @@ async function main() {
   await mintTx.wait();
   voterTokenBalance = await contract.balanceOf(voter.address);
   console.log(`after the mint, the voter has ${voterTokenBalance} decimals of balance\n`)
-
+  let votePower = await contract.getVotes(voter.address);
+  console.log(`after the mint, the voter has ${votePower} decimals of vote Power\n`)
 }
 
 main().catch((error) => {
