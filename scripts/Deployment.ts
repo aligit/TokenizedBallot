@@ -34,6 +34,11 @@ async function main() {
   console.log(`after the transfer, the voter has ${votePower} decimals of vote Power\n`)
   votePower = await contract.getVotes(other.address);
   console.log(`after the transfer, the other has ${votePower} decimals of vote Power\n`)
+  const currentBlock = await ethers.provider.getBlock("latest");
+  for (let blockNumber = currentBlock.number - 1; blockNumber >= 0; blockNumber--) {
+    const pastVotePower = await contract.getPastVotes(voter.address, blockNumber)
+    console.log(`At block ${blockNumber} the vother has ${pastVotePower} decimals of vote Power\n`)
+  }
 }
 
 main().catch((error) => {
