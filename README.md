@@ -23,3 +23,9 @@ yarn run ts-node --files scripts/GiveVotingTokens.ts $CONTRACT
 ```bash
 yarn run ts-node --files scripts/Delegate.ts $CONTRACT NEW_DELEGATE_PERSON_ADDRESS
 ```
+
+### Query Results
+
+```bash
+yarn run ts-node --files scripts/Delegate.ts $CONTRACT
+```
