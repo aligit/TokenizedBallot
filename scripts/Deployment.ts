@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { MyToken__factory } from "../typechain-types";
+import { MyToken__factory } from "../typechain-types/factories/contracts/ERC20Votes.sol/MyToken__factory";
 import * as dotenv from 'dotenv'
 dotenv.config()
 
