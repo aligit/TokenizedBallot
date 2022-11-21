@@ -35,6 +35,10 @@ contract TokenizedBallot {
         votePowerSpent[msg.sender] += amount;
     }
 
+    function winnerVoteCount() external view returns (uint256 winnerVoteCount) {
+        winnerVoteCount = proposals[winningProposal()].voteCount;
+    }
+
     function votePower(address account) public view returns (uint256) {
         return
             voteToken.getPastVotes(account, targetBlock) -
