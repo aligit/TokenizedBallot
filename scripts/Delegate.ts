@@ -4,8 +4,6 @@ import { MyToken, MyToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-const TEST_MINT_VALUE = ethers.utils.parseEther("10");
-
 async function main() {
   const provider = ethers.getDefaultProvider("goerli")
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
