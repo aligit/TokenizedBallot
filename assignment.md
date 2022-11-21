@@ -2,9 +2,21 @@
 
 ## ToDo
 * Complete the contracts together
-* Develop and run scripts for “TokenizedBallot.sol” within your group to give voting tokens, delegating voting power, casting votes, checking vote power and querying results
+* Develop and run scripts for “TokenizedBallot.sol” within your group to
+  * Give voting tokens
+  * Delegating voting power
+  * Casting votes
+  * Checking vote power
+  * Querying results
 * Write a report with each function execution and the transaction hash, if successful, or the revert reason, if failed
 * Share your code in a github repo in the submission form
+
+### More details from Lesson 12
+with all those scripts, one script to deploy the token, to mint, one script to
+self delegate, another to deploy the tokenized ballot, pass a block number
+after the delegate transaction, cast the vote, check the result, we can use a
+lot of scripts from past weekend, plus the script to deal with erc20, we can
+even to transfer and delegate between us, do some allowance and transfer from.
 
 ## Submission
 * Just one submission necessary per team and stay in same groups you have been
