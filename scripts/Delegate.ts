@@ -1,6 +1,6 @@
 
 import { ethers } from "hardhat";
-import { MyToken, MyToken__factory } from "../typechain-types";
+import { GroupTenToken, GroupTenToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -17,8 +17,8 @@ async function main() {
   const newDelegatedAddress = params[1];
 
   console.log(`Attaching MyToken to contract`);
-  let tokenizedBallotContract: MyToken;
-  const tokenizedBallotContractFactory = new MyToken__factory(signer);
+  let tokenizedBallotContract: GroupTenToken;
+  const tokenizedBallotContractFactory = new GroupTenToken__factory(signer);
   tokenizedBallotContract = tokenizedBallotContractFactory.attach(contractAddress);
 
   console.log("Delegating voting power to other");
