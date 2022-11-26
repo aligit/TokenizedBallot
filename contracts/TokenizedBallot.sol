@@ -3,11 +3,11 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./ERC20Votes.sol";
 
-contract TokenizedBallot {
-    MyToken public voteToken;
-
+contract Ballot {
+    GroupTenToken public voteToken;
+    // An address type variable is used to store ethereum accounts.
+    address public owner;
     uint256 public targetBlock;
-
     struct Proposal {
         bytes32 name;
         uint256 voteCount;
@@ -23,7 +23,8 @@ contract TokenizedBallot {
         uint256 _targetBlock
     ) {
         targetBlock = _targetBlock;
-        voteToken = MyToken(_voteToken);
+        voteToken = GroupTenToken(_voteToken);
+        owner = msg.sender;
         for (uint256 i = 0; i < proposalNames.length; i++) {
             proposals.push(Proposal({name: proposalNames[i], voteCount: 0}));
         }
@@ -53,6 +54,10 @@ contract TokenizedBallot {
                 winningProposal_ = p;
             }
         }
+    }
+
+    function getProposals() external view returns (Proposal[] memory) {
+        return proposals;
     }
 
     function winnerName() external view returns (bytes32 winnerName_) {

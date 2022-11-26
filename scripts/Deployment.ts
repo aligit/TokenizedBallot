@@ -1,23 +1,53 @@
 import { ethers } from "hardhat";
-import { MyToken__factory } from "../typechain-types";
+import { GroupTenToken__factory, Ballot__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
+import voters from './assets/voters.json'
+
+
 dotenv.config()
 
-const TEST_MINT_VALUE = ethers.utils.parseEther("10");
+const TOTAL_SUPPLY_IN_ETHERS = 1000000;
+const MINT_VALUE = ethers.utils.parseEther(TOTAL_SUPPLY_IN_ETHERS.toString());
+const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
 
 async function main() {
-  // const accounts = await ethers.getSigners();
-  // const [minter, voter, other] = accounts;
-  //For the weekend project(requires dotenu)//Check Lesson8 for inspiration
-  const provider = ethers.getDefaultProvider("goerli")
+
+  // Deploy gtetToken
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
-  const signer = wallet.connect(provider);
-  const balanceBN = await signer.getBalance();
-  console.log(`Connected to the acount of address ${signer.address}\nThis account has a balance of ${balanceBN.toString()} Wei`);
-  const contractFactory = new MyToken__factory(signer);
-  const contract = await contractFactory.deploy();
-  await contract.deployed();
-  console.log(`Tokenized Votes contract deployed at ${contract.address}\n`)
+  const deployer = wallet.connect(ethers.getDefaultProvider("goerli"));
+  console.log(`Connected to the acount of address ${deployer.address}`);
+  const tokenContractFactory = new GroupTenToken__factory(deployer);
+  const gtetTokenContract = await tokenContractFactory.deploy();
+  await gtetTokenContract.deployed();
+  console.log(`GroupTenToken(GTET) contract deployed at ${gtetTokenContract.address}\n`)
+
+  // Mint voting power
+  const votingPowerTransfers = []
+  for (let index = 0; index < voters.length; index++) {
+    const voterShare = Math.round(TOTAL_SUPPLY_IN_ETHERS / voters.length);
+    const voter = voters[index];
+    console.log(`voter has ${voterShare} tokens`)
+    const mintTx = await gtetTokenContract.mint(
+      voter,
+      MINT_VALUE
+    );
+    votingPowerTransfers.push(mintTx.wait());
+  }
+
+  await Promise.all(votingPowerTransfers);
+  console.log(`voting powers given`)
+
+  const currentBlock = await ethers.provider.getBlock("latest");
+  // Deploy TokenizedBallot
+  const tokenizedBallotContractFactory = new Ballot__factory(deployer);
+  const tokenizedBallotContract = await tokenizedBallotContractFactory.deploy(
+    PROPOSALS.map((name) => ethers.utils.formatBytes32String(name)),
+    gtetTokenContract.address,
+    currentBlock.number
+  );
+  await tokenizedBallotContract.deployed();
+  console.log(`ballot for voting on following proposals deployed at contract\n ${tokenizedBallotContract.address} at block ${currentBlock}`);
+  PROPOSALS.forEach((p: string) => console.log(p));
 }
 
 main().catch((error) => {
