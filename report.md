@@ -38,6 +38,17 @@ to store the them onchain. Moreover we were missing storage of voters. To save
 gas we decided to store that info offchain in a json file containing members of
 group 8.
 
+After the deploy and mint group members whose address was in voters.json were
+given GTET tokens in the following transactions:
+
+- https://goerli.etherscan.io/tx/0x3b98906ea578e74718cab65d5983ca667769dd5491bb35d8eff2ab8b9eca9aa6
+- https://goerli.etherscan.io/tx/0x1e4fa3249e9c1d4ff1a3841d474c49ac0aa700edc9dbfb2390a6579cd576fc8a
+- https://goerli.etherscan.io/tx/0xe99e951df2f8c583f5444ede6d2f47480ef22652ef036bcea0f039af79294572
+- https://goerli.etherscan.io/tx/0x07ca54ba273be57b3120fb98cff4b1b4d49e726b4f61a33723838ea3bbbbb67b
+- https://goerli.etherscan.io/tx/0x29b205b96bcd68de45dd4405ab5828ff2918e72181029f6924456358ba1a1749
+- https://goerli.etherscan.io/tx/0xdf1062cdccd7b5b9af7a9d14e8a1b6ef5d753cc103afcdf4212895cf548e115e
+
+
 ### Correction
 
 - When we deployed the contract the block number was not shown correctly. We
