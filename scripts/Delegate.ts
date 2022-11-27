@@ -1,6 +1,8 @@
 import { ethers } from "hardhat";
 import { GroupTenToken, GroupTenToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
+// import * as replace  from 'replace-in-file';
+import { replaceInFile } from 'replace-in-file';
 import voters from './assets/voters.json'
 
 dotenv.config()
@@ -13,7 +15,7 @@ async function main() {
   console.log(`Connected to the acount of address ${signer.address}\nThis account has a balance of ${balanceBN.toString()} Wei`);
   const args = process.argv;
   const contractAddress = process.env.CONTRACT;
-  const delegateeAddress = args[1];
+  const delegateeAddress = args[2];
   if (contractAddress === undefined || contractAddress === '') {
     throw "make sure CONTRACT address is set in the .env file";
   }
@@ -26,14 +28,32 @@ async function main() {
   const tokenizedBallotContractFactory = new GroupTenToken__factory(signer);
   tokenizedBallotContract = tokenizedBallotContractFactory.attach(contractAddress);
 
-  console.log(`Delegating voting right from ${signer.address} to ${delegateeAddress}`);
+  console.log(`Delegating voting right from ${signer.address} to
+              ${delegateeAddress}`);
   const delegateTx = await tokenizedBallotContract.delegate(delegateeAddress);
   await delegateTx.wait();
   const votePower = await tokenizedBallotContract.getVotes(delegateeAddress);
-  console.log(`Voting power delegated to: ${delegateeAddress} with voting power of ${votePower}`);
+  console.log(
+    `Voting delegated\n
+    from: ${signer.address}\n
+    to: ${delegateeAddress}\n
+    with voting power of ${votePower}`
+  );
   voters.splice(voters.indexOf(signer.address));
   voters.push(delegateeAddress);
-  //TODO update json file with new value
+
+  //Update off-chain data regardings voters
+  const voterReplacementOptions = {
+    files: 'scripts/assets/voters.json',
+    from: `${signer.address}`,
+    to: `${delegateeAddress}`,
+  };
+  try {
+    await replaceInFile(voterReplacementOptions)
+  }
+  catch (error) {
+    console.error('Error occurred:', error);
+  }
 }
 
 main().catch((error) => {
