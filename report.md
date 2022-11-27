@@ -2,13 +2,13 @@
 
 ## Deployment
 
-### input
+### Input
 
 ```bash
 yarn run ts-node --files ./scripts/Deployment.ts
 ```
 
-### output
+### Output
 
 ```bash
 GroupTenToken(GTET) contract deployed at 0x25e5737A26602289490C794693031D38973B023F
@@ -53,3 +53,29 @@ given GTET tokens in the following transactions:
 
 - When we deployed the contract the block number was not shown correctly. We
   fixed that by invoking the number method.
+
+## Delegation
+
+### Input
+
+```bash
+yarn run ts-node --files scripts/Delegate.ts "0xF40cfBaaB1E3f4035c9D88cc97BE2445cB6EF7cf"
+```
+
+### Output
+
+```bash
+Attaching GTET token to contract
+Delegating voting right from 0xe5E7fF9C1256f4313Cec401A11f835c5688A28a4 to
+              0xF40cfBaaB1E3f4035c9D88cc97BE2445cB6EF7cf
+              
+              
+    from: 0xe5E7fF9C1256f4313Cec401A11f835c5688A28a4
+
+    to: 0xF40cfBaaB1E3f4035c9D88cc97BE2445cB6EF7cf
+
+    with voting power of 1000000000000000000000000
+```
+
+After delegate script call on the token contract the person ran the script will
+see his addressed being replaced in voters.json by the delegatee

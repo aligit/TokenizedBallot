@@ -13,7 +13,7 @@ async function main() {
   const balanceBN = await signer.getBalance();
   console.log(`Connected to the acount of address ${signer.address}\nThis account has a balance of ${balanceBN.toString()} Wei`);
   const args = process.argv;
-  const contractAddress = process.env.CONTRACT;
+  const contractAddress = process.env.CONTRACT_GTET;
   const delegateeAddress = args[2];
   if (contractAddress === undefined || contractAddress === '') {
     throw "make sure CONTRACT address is set in the .env file";

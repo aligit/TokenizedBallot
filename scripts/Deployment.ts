@@ -26,7 +26,8 @@ async function main() {
   for (let index = 0; index < voters.length; index++) {
     const voterShare = Math.round(TOTAL_SUPPLY_IN_ETHERS / voters.length);
     const voter = voters[index];
-    console.log(`voter ${voters[index]} was given ${voterShare} tokens`)
+    const voterTokenBalance = await gtetTokenContract.balanceOf(voter);
+    console.log(`voter ${voters[index]} was given ${voterTokenBalance} tokens`)
     const mintTx = await gtetTokenContract.mint(
       voter,
       MINT_VALUE
