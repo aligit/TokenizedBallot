@@ -26,7 +26,7 @@ async function main() {
   for (let index = 0; index < voters.length; index++) {
     const voterShare = Math.round(TOTAL_SUPPLY_IN_ETHERS / voters.length);
     const voter = voters[index];
-    console.log(`voter has ${voterShare} tokens`)
+    console.log(`voter ${voters[index]} was given ${voterShare} tokens`)
     const mintTx = await gtetTokenContract.mint(
       voter,
       MINT_VALUE
@@ -46,7 +46,7 @@ async function main() {
     currentBlock.number
   );
   await tokenizedBallotContract.deployed();
-  console.log(`ballot for voting on following proposals deployed at contract\n ${tokenizedBallotContract.address} at block ${currentBlock}`);
+  console.log(`ballot for voting on following proposals deployed at contract\n ${tokenizedBallotContract.address} at block number ${currentBlock.number}\n`);
   PROPOSALS.forEach((p: string) => console.log(p));
 }
 

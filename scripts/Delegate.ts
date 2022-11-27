@@ -1,7 +1,6 @@
 import { ethers } from "hardhat";
 import { GroupTenToken, GroupTenToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
-// import * as replace  from 'replace-in-file';
 import { replaceInFile } from 'replace-in-file';
 import voters from './assets/voters.json'
 
