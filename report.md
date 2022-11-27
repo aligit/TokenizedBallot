@@ -77,5 +77,8 @@ Delegating voting right from 0xe5E7fF9C1256f4313Cec401A11f835c5688A28a4 to
     with voting power of 1000000000000000000000000
 ```
 
-After delegate script call on the token contract the person ran the script will
-see his addressed being replaced in voters.json by the delegatee
+After Delegate.ts call on the token contract the person who ran the script will
+see his addressed being replaced in voters.json by the delegatee.
+
+The associated transaction is 
+[0x19cbcc1361ec0b87fa793a9b56e82e4fcccd28d21d692df870507fd0b6f4c1e6](https://goerli.etherscan.io/tx/0x19cbcc1361ec0b87fa793a9b56e82e4fcccd28d21d692df870507fd0b6f4c1e6)
