@@ -59,7 +59,7 @@ given GTET tokens in the following transactions:
 ### Input
 
 ```bash
-yarn run ts-node --files scripts/Delegate.ts "0xF40cfBaaB1E3f4035c9D88cc97BE2445cB6EF7cf"
+yarn run ts-node --files scripts/Delegate.ts "0xe5E7fF9C1256f4313Cec401A11f835c5688A28a4"
 ```
 
 ### Output
@@ -75,6 +75,9 @@ Delegating voting right from 0xe5E7fF9C1256f4313Cec401A11f835c5688A28a4 to
     to: 0xF40cfBaaB1E3f4035c9D88cc97BE2445cB6EF7cf
     with voting power of 1000000000000000000000000
 ```
+
+Before testing delegating to another person, I self delegated to my self in
+order to be compliant with ERC20Votes.
 
 After Delegate.ts call on the token contract the person who ran the script will
 see his addressed being replaced in voters.json by the delegatee.

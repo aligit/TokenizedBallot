@@ -1,10 +1,16 @@
 import { ethers } from "hardhat";
 import * as dotenv from 'dotenv'
-import abi from "../artifacts/contracts/TokenizedBallot.sol/Ballot.json";
+import abiTokenizedBallot from "../artifacts/contracts/TokenizedBallot.sol/Ballot.json";
+import abiGroupTenToken from "../artifacts/contracts/ERC20Votes.sol/GroupTenToken.json";
 
-const contractABI = abi.abi;
+
+const tokenizedBallotContractABI = abiTokenizedBallot.abi;
+const groupTenTokenABI = abiGroupTenToken.abi;
+
 // expect voting with 60% of total supply vote power
-const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("600000");
+// const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("600000");
+const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("50");
+// 1000000000000000000000000
 
 dotenv.config()
 
@@ -12,11 +18,15 @@ async function main() {
   const args = process.argv;
   const voteIndex = parseInt(args[2]);
   const ballotContractAddress = process.env.CONTRACT_BALLOT;
+  const tokenContractAddress = process.env.CONTRACT_GTET;
   const privateKey = process.env.PRIVATE_KEY ?? ""
   if (!isNumber(voteIndex)) {
     throw "Only a number representing a proposal name is accepted";
   }
   if (ballotContractAddress === undefined || ballotContractAddress === '') {
+    throw "make sure CONTRACT_BALLOT address is set in the .env file";
+  }
+  if (tokenContractAddress === undefined || tokenContractAddress === '') {
     throw "make sure CONTRACT_BALLOT address is set in the .env file";
   }
 
@@ -28,9 +38,20 @@ async function main() {
   console.log(`attaching Ballot Contract`);
   const tokenizedBallotContract = new ethers.Contract(
     ballotContractAddress,
-    contractABI,
+    tokenizedBallotContractABI,
     voter
   );
+
+  console.log(`attaching token Contract`);
+  const groupTenTokenContract = new ethers.Contract(
+    tokenContractAddress,
+    groupTenTokenABI,
+    voter
+  );
+
+
+  const votePower = await groupTenTokenContract.getVotes(voter.address);
+  console.log(`after the self delegation the voter has ${votePower} decimals of vote Power\n`)
 
   const tProposals = await tokenizedBallotContract.getProposals();
   // List proposals
@@ -42,7 +63,7 @@ async function main() {
   }
 
   console.log("Voting on proposal");
-  const voteTx = await tokenizedBallotContract.vote(tProposals[voteIndex], MIN_VOTE_POWER_VALUE);
+  const voteTx = await tokenizedBallotContract.vote(voteIndex.toString(), MIN_VOTE_POWER_VALUE);
   await voteTx.wait();
 
 }
