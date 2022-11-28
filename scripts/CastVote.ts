@@ -1,10 +1,10 @@
 import { ethers } from "hardhat";
-import { Ballot, Ballot__factory, GroupTenToken, GroupTenToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
-import voters from './assets/voters.json'
 import abi from "../artifacts/contracts/TokenizedBallot.sol/Ballot.json";
 
 const contractABI = abi.abi;
+// expect voting with 60% of total supply vote power
+const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("600000");
 
 dotenv.config()
 
@@ -41,9 +41,10 @@ async function main() {
 
   }
 
-  //TODO Has the voter already voted?
-  //TODO What was the vote(save off-chain)
-  //TODO asdf
+  console.log("Voting on proposal");
+  const voteTx = await tokenizedBallotContract.vote(tProposals[voteIndex], MIN_VOTE_POWER_VALUE);
+  await voteTx.wait();
+
 }
 
 function isNumber(value: string | number): boolean {
