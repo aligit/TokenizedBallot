@@ -1,4 +1,3 @@
-
 import { ethers } from "hardhat";
 import { MyToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'

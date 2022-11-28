@@ -73,7 +73,6 @@ Delegating voting right from 0xe5E7fF9C1256f4313Cec401A11f835c5688A28a4 to
     from: 0xe5E7fF9C1256f4313Cec401A11f835c5688A28a4
 
     to: 0xF40cfBaaB1E3f4035c9D88cc97BE2445cB6EF7cf
-
     with voting power of 1000000000000000000000000
 ```
 
@@ -82,3 +81,25 @@ see his addressed being replaced in voters.json by the delegatee.
 
 The associated transaction is 
 [0x19cbcc1361ec0b87fa793a9b56e82e4fcccd28d21d692df870507fd0b6f4c1e6](https://goerli.etherscan.io/tx/0x19cbcc1361ec0b87fa793a9b56e82e4fcccd28d21d692df870507fd0b6f4c1e6)
+
+
+## CastVoting
+
+### Input
+
+```bash
+yarn run ts-node --files ./scripts/CastVote.ts <number>
+```
+ 
+The number represents the index of the vote. Must be bigger than zero.
+
+
+### Remarks
+
+While trying to attach the tokenized ballot contract wit it's address we ran
+into multiple problems such as `resolver or addr is not configured for ENS
+name` or `missing revert data in call exception; Transaction reverted without a
+reason string`. Hardhat provided us with a
+[hint](https://docs.ethers.io/v5/troubleshooting/errors/#help-CALL_EXCEPTION)
+which helped us to resolve the problem. 
+

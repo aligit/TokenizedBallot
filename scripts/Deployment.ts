@@ -6,8 +6,7 @@ import voters from './assets/voters.json'
 
 dotenv.config()
 
-const TOTAL_SUPPLY_IN_ETHERS = 1000000;
-const MINT_VALUE = ethers.utils.parseEther(TOTAL_SUPPLY_IN_ETHERS.toString());
+const MINT_VALUE = ethers.utils.parseEther("1000000");
 const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
 
 async function main() {
@@ -24,10 +23,8 @@ async function main() {
   // Mint voting power
   const votingPowerTransfers = []
   for (let index = 0; index < voters.length; index++) {
-    const voterShare = Math.round(TOTAL_SUPPLY_IN_ETHERS / voters.length);
     const voter = voters[index];
-    const voterTokenBalance = await gtetTokenContract.balanceOf(voter);
-    console.log(`voter ${voters[index]} was given ${voterTokenBalance} tokens`)
+    console.log(`voter ${voters[index]} was given tokens`)
     const mintTx = await gtetTokenContract.mint(
       voter,
       MINT_VALUE

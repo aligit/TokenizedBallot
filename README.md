@@ -6,6 +6,10 @@
 
 ## Commands
 
+```bash
+yarn install
+```
+
 ### Deploy contract
 
 ```bash
