@@ -6,7 +6,7 @@ import voters from './assets/voters.json'
 
 dotenv.config()
 
-const MINT_VALUE = ethers.utils.parseEther("1000000");
+const MINT_VALUE = ethers.utils.parseEther("100");
 const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
 
 async function main() {
@@ -20,11 +20,14 @@ async function main() {
   await gtetTokenContract.deployed();
   console.log(`GroupTenToken(GTET) contract deployed at ${gtetTokenContract.address}\n`)
 
+  const mintTxDeployer = await gtetTokenContract.mint(
+    deployer.address,
+    MINT_VALUE
+  );
   // Mint voting power
   const votingPowerTransfers = []
-  for (let index = 0; index < voters.length; index++) {
+  for (let index = 1; index < voters.length; index++) {
     const voter = voters[index];
-    console.log(`voter ${voters[index]} was given tokens`)
     const mintTx = await gtetTokenContract.mint(
       voter,
       MINT_VALUE
@@ -34,6 +37,10 @@ async function main() {
 
   await Promise.all(votingPowerTransfers);
   console.log(`voting powers given`)
+
+  const delegateTx = await gtetTokenContract.delegate(deployer.address);
+  await delegateTx.wait();
+  console.log(`Delegated to self`)
 
   const currentBlock = await ethers.provider.getBlock("latest");
   // Deploy TokenizedBallot

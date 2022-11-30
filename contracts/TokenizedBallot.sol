@@ -63,4 +63,9 @@ contract Ballot {
     function winnerName() external view returns (bytes32 winnerName_) {
         winnerName_ = proposals[winningProposal()].name;
     }
+
+    function changeTargetBlock(uint256 _targetBlock) external {
+        require(msg.sender == owner, "Only owner can change the targetBlock");
+        targetBlock = _targetBlock;
+    }
 }

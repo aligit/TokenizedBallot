@@ -9,7 +9,7 @@ const groupTenTokenABI = abiGroupTenToken.abi;
 
 // expect voting with 60% of total supply vote power
 // const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("600000");
-const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("50");
+const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("7");
 // 1000000000000000000000000
 
 dotenv.config()
