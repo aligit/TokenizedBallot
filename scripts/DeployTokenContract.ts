@@ -3,37 +3,65 @@ import { GroupTenToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
 // import voters from './assets/voters.json'
 
-
 dotenv.config()
 
 const MINT_VALUE = ethers.utils.parseEther("100");
 
 async function main() {
 
-  // Deploy gtetToken
-  const walletDeployer = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
-  const deployer = walletDeployer.connect(ethers.getDefaultProvider("goerli"));
-  // const walletVoter = new ethers.Wallet("f95c9e8d855d51df88aaf390679382459329ef7cc78490c52b7de5b3fc4b10b5");
-  // const voter = walletVoter.connect(ethers.getDefaultProvider("goerli"));
-  // const walletOther = new ethers.Wallet("e8d11010e199153aa06a1f617cd3c052a4681bb1d264c4647f8f634643782a43");
-  // const other = walletOther.connect(ethers.getDefaultProvider("goerli"));
+  const accounts = await ethers.getSigners();
+  const [minter, voter, other] = accounts;
 
-  const tokenContractFactory = new GroupTenToken__factory(deployer);
-  const gtetTokenContract = await tokenContractFactory.deploy();
-  await gtetTokenContract.deployed();
-  console.log(`GroupTenToken(GTET) contract deployed at ${gtetTokenContract.address}\n`)
+  const contractFactory = new GroupTenToken__factory(minter);
+  const contract = await contractFactory.deploy();
+  await contract.deployed();
+  console.log(`Tokenized Votes contract deployed at ${contract.address}\n`)
+  let voterTokenBalance = await contract.balanceOf(voter.address);
+  let minterTokenBalance = await contract.balanceOf(minter.address);
+  let otherTokenBalance = await contract.balanceOf(other.address);
 
-  await gtetTokenContract.mint(deployer.address, MINT_VALUE);
-  await gtetTokenContract.mint("0x103a5f440e6fb3e348606194A61080DE0a70064A", MINT_VALUE);
-  await gtetTokenContract.mint("0x6B49A54f7345EEF9e3e84ffe1e541C246e6AaF9F", MINT_VALUE);
-
-  const deployerDelegateTx = await gtetTokenContract.connect(deployer).delegate(deployer.address);
-  await deployerDelegateTx.wait();
-  // const voterDelegateTx = await gtetTokenContract.delegate(voter.address);
-  // await voterDelegateTx.wait();
-  // const otherDelegateTx = await gtetTokenContract.delegate(other.address);
-  // await otherDelegateTx.wait();
-  console.log(`Each account delegated to self`)
+  console.log(`The voter starts with at ${voterTokenBalance} decimals of balance\n`)
+  const voterMintTx = await contract.mint(voter.address, MINT_VALUE);
+  await voterMintTx.wait();
+  const minterMintTx = await contract.mint(minter.address, MINT_VALUE);
+  await minterMintTx.wait();
+  const otherMintTx = await contract.mint(other.address, MINT_VALUE);
+  await otherMintTx.wait();
+  voterTokenBalance = await contract.balanceOf(voter.address);
+  minterTokenBalance = await contract.balanceOf(minter.address);
+  otherTokenBalance = await contract.balanceOf(other.address);
+  console.log(`after the mint, the voter has ${voterTokenBalance} decimals of balance\n`)
+  console.log(`after the mint, the minter has ${minterTokenBalance} decimals of balance\n`)
+  console.log(`after the mint, the other has ${otherTokenBalance} decimals of balance\n`)
+  let voterVotePower = await contract.getVotes(voter.address);
+  let minterVotePower = await contract.getVotes(minter.address);
+  let otherVotePower = await contract.getVotes(other.address);
+  console.log(`after the mint, the voter has ${voterVotePower} decimals of vote Power\n`)
+  console.log(`after the mint, the minter has ${minterVotePower} decimals of vote Power\n`)
+  console.log(`after the mint, the other has ${otherVotePower} decimals of vote Power\n`)
+  const voterDelegateTx = await contract.connect(voter).delegate(voter.address);
+  await voterDelegateTx.wait();
+  const minterDelegateTx = await contract.connect(minter).delegate(minter.address);
+  await minterDelegateTx.wait();
+  const otherDelegateTx = await contract.connect(other).delegate(other.address);
+  await otherDelegateTx.wait();
+  voterVotePower = await contract.getVotes(voter.address);
+  minterVotePower = await contract.getVotes(minter.address);
+  otherVotePower = await contract.getVotes(other.address);
+  console.log(`after the self delegation the voter has ${voterVotePower} decimals of vote Power\n`)
+  console.log(`after the self delegation the minter has ${minterVotePower} decimals of vote Power\n`)
+  console.log(`after the self delegation the other has ${otherVotePower} decimals of vote Power\n`)
+  // const transferTx = await contract.connect(voter).transfer(other.address, MINT_VALUE.div(3));
+  // await transferTx.wait();
+  voterVotePower = await contract.getVotes(voter.address);
+  console.log(`after the transfer, the voter has ${voterVotePower} decimals of vote Power\n`)
+  voterVotePower = await contract.getVotes(other.address);
+  console.log(`after the transfer, the other has ${voterVotePower} decimals of vote Power\n`)
+  const currentBlock = await ethers.provider.getBlock("latest");
+  for (let blockNumber = currentBlock.number - 1; blockNumber >= 0; blockNumber--) {
+    const pastVotePower = await contract.getPastVotes(voter.address, blockNumber)
+    console.log(`At block ${blockNumber} the vother has ${pastVotePower} decimals of vote Power\n`)
+  }
 }
 
 main().catch((error) => {
