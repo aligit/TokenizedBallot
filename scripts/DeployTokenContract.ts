@@ -6,9 +6,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 const MINT_VALUE = ethers.utils.parseEther("100");
-// const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
-const PROPOSALS = ['agree', 'disagree', 'neutral'];
-const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("70");
+const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
 
 async function main() {
 
@@ -44,10 +42,6 @@ async function main() {
   await voterDelegateTx.wait();
   const otherDelegateTx = await groupTenTokenContract.connect(other).delegate(other.address);
   await otherDelegateTx.wait();
-  // for (let blockNumber = currentBlock.number - 1; blockNumber >= 0; blockNumber--) {
-  //   const pastVotePower = await groupTenTokenContract.getPastVotes(voter.address, blockNumber)
-  //   console.log(`At block ${blockNumber} the vother has ${pastVotePower} decimals of vote Power\n`)
-  // }
 
   // Deploy TokenizedBallot
   currentBlock = await ethers.provider.getBlock("latest");
@@ -56,21 +50,12 @@ async function main() {
     groupTenTokenContract.address,
     currentBlock.number
   );
-  // console.log(`target block set to ${targetBlock}`);
   const targetBlock = await tokenizedBallotContract.targetBlock();
   console.log(`target block set to ${targetBlock}`);
   await tokenizedBallotContract.deployed();
   const voterTokenizedBallotContract = tokenizedBallotContract.connect(voter).attach(tokenizedBallotContract.address);
   const otherTokenizedBallotContract = tokenizedBallotContract.connect(other).attach(tokenizedBallotContract.address);
   PROPOSALS.forEach((p: string) => console.log(p));
-  // const tProposals = await tokenizedBallotContract.getProposals();
-
-  // const otherGroupTenTokenContractFactory = new GroupTenToken__factory(other);
-  // const voterGroupTenTokenContractFactory = new GroupTenToken__factory(voter);
-  // const otherGroupTenTokenContract = otherGroupTenTokenContractFactory.attach(groupTenTokenContract.address);
-  // const voterGroupTenTokenContract = voterGroupTenTokenContractFactory.attach(groupTenTokenContract.address);
-  // await otherGroupTenTokenContract.deployed();
-  // await voterGroupTenTokenContract.deployed();
 
   let voterVotePower = await groupTenTokenContract.getPastVotes(voter.address, targetBlock);
   let minterVotePower = await groupTenTokenContract.getPastVotes(minter.address, targetBlock);
