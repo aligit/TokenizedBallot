@@ -3,7 +3,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./ERC20Votes.sol";
 
-contract Ballot {
+contract TokenizedBallot {
     GroupTenToken public voteToken;
     // An address type variable is used to store ethereum accounts.
     address public owner;
