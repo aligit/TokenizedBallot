@@ -4,9 +4,7 @@ import * as dotenv from 'dotenv'
 import voters from './assets/voters.json'
 
 dotenv.config()
-
 const MINT_VALUE = ethers.utils.parseEther("100");
-const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
 
 async function main() {
 
