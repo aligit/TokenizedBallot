@@ -6,7 +6,8 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 const MINT_VALUE = ethers.utils.parseEther("100");
-const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
+// const PROPOSALS = ['Remix', 'VSCode', 'VIM'];
+const PROPOSALS = ['agree', 'disagree', 'neutral'];
 const MIN_VOTE_POWER_VALUE = ethers.utils.parseEther("70");
 
 async function main() {
@@ -78,14 +79,16 @@ async function main() {
   console.log(`Voter has ${ethers.utils.formatEther(voterVotePower)} vote power`);
   console.log(`Other has ${ethers.utils.formatEther(otherVotePower)} vote power`);
   console.log(`Voter with ${voterVotePower} vote power about to vote with ${voterVotePower.div(5)}`);
-  const voterVoteTx = await voterTokenizedBallotContract.vote(2, voterVotePower.div(5));
+  const voterVoteTx = await voterTokenizedBallotContract.vote(0, voterVotePower.div(5));
   await voterVoteTx.wait();
   console.log(`Minter with ${minterVotePower} vote power about to vote with ${minterVotePower.div(5)}`);
   const minterVoteTx = await tokenizedBallotContract.vote(2, voterVotePower.div(5));
   await minterVoteTx.wait();
   console.log(`Other with ${otherVotePower} vote power about to vote ${otherVotePower.div(5)}`);
-  const otherVoteTx = await otherTokenizedBallotContract.vote(2, otherVotePower.div("5"));
+  const otherVoteTx = await otherTokenizedBallotContract.vote(0, otherVotePower.div("5"));
   await otherVoteTx.wait();
+  const winner = await tokenizedBallotContract.winnerName();
+  console.log(`The winner is ${ethers.utils.parseBytes32String(winner)}`);
 }
 
 main().catch((error) => {
