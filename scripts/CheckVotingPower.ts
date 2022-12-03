@@ -19,7 +19,6 @@ async function main() {
 
   const args = process.argv;
   const params = args.slice(2);
-  if (params.length <= 0) throw new Error("arguments are missing");
   if (params.length <= 1) throw new Error("arguments are missing");
   const voterAddress = params[0];
   const tokenizedBallotContractBlock = params[1];
