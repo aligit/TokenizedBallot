@@ -1,25 +1,21 @@
 import { ethers } from "hardhat";
 import { GroupTenToken, GroupTenToken__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
-import { replaceInFile } from 'replace-in-file';
-import voters from './assets/voters.json'
 
 dotenv.config()
 
 async function main() {
-  const provider = ethers.getDefaultProvider("goerli")
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
-  const signer = wallet.connect(provider);
+  const alchemyProvider = new ethers.providers.AlchemyProvider("goerli", process.env.ALCHEMY_API_KEY);
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "", alchemyProvider);
+  const signer = wallet.connect(alchemyProvider);
   const balanceBN = await signer.getBalance();
   console.log(`Connected to the acount of address ${signer.address}\nThis account has a balance of ${balanceBN.toString()} Wei`);
   const args = process.argv;
-  const contractAddress = process.env.CONTRACT_GTET;
-  const delegateeAddress = args[2];
+  const params = args.slice(2);
+  const contractAddress = params[0];
+  const delegateeAddress = params[1];
   if (contractAddress === undefined || contractAddress === '') {
     throw "make sure CONTRACT address is set in the .env file";
-  }
-  if (!voters.includes(signer.address)) {
-    throw "You are not given right to vote";
   }
 
   console.log(`Attaching GTET token to contract`);
@@ -38,21 +34,7 @@ async function main() {
     to: ${delegateeAddress}\n
     with voting power of ${votePower}`
   );
-  voters.splice(voters.indexOf(signer.address));
-  voters.push(delegateeAddress);
 
-  //Update off-chain data regardings voters
-  const voterReplacementOptions = {
-    files: 'scripts/assets/voters.json',
-    from: `${signer.address}`,
-    to: `${delegateeAddress}`,
-  };
-  try {
-    await replaceInFile(voterReplacementOptions)
-  }
-  catch (error) {
-    console.error('Error occurred:', error);
-  }
 }
 
 main().catch((error) => {
