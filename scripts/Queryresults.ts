@@ -1,33 +1,33 @@
 import { ethers } from "hardhat";
-import { MyToken, MyToken__factory, TokenizedBallot, TokenizedBallot__factory } from "../typechain-types";
+import { TokenizedBallot, TokenizedBallot__factory } from "../typechain-types";
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-const TEST_MINT_VALUE = ethers.utils.parseEther("10");
-
 async function main() {
-  const provider = ethers.getDefaultProvider("goerli")
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "");
-  const signer = wallet.connect(provider);
+  const alchemyProvider = new ethers.providers.AlchemyProvider("goerli", process.env.ALCHEMY_API_KEY);
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "", alchemyProvider);
+  const signer = wallet.connect(alchemyProvider);
   const args = process.argv;
   const params = args.slice(2);
-  const contractAddress = params[0];
+  const tokenizedBallotcontractAddress = params[0];
+  if (tokenizedBallotcontractAddress === undefined || tokenizedBallotcontractAddress === '') {
+    throw "make sure ballot's contract address is provided as argument";
+  }
 
   const ballotContractFactory = new TokenizedBallot__factory(signer);
-  let ballotContract: TokenizedBallot = ballotContractFactory.attach(
-    contractAddress
+  let tokenizedBallotContract: TokenizedBallot = ballotContractFactory.attach(
+    tokenizedBallotcontractAddress
   );
 
-  const winningProposalNumber = await ballotContract.winningProposal();
+  const winningProposalNumber = await tokenizedBallotContract.winningProposal();
 
-  const winnerNameBytes32 = await ballotContract.winnerName();
+  const winnerNameBytes32 = await tokenizedBallotContract.winnerName();
 
   const winnerName = ethers.utils.parseBytes32String(winnerNameBytes32);
 
   console.log(
     `Winning proposal index is ${winningProposalNumber} named ${winnerName}.`
   );
-
 }
 
 main().catch((error) => {

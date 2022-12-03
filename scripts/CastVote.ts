@@ -21,7 +21,7 @@ async function main() {
     throw "Only a number representing a proposal name is accepted";
   }
   if (ballotContractAddress === undefined || ballotContractAddress === '') {
-    throw "make sure CONTRACT_BALLOT address is set in the .env file";
+    throw "make sure ballot's contract address is provided as argument";
   }
 
   console.log(`attaching Ballot Contract`);

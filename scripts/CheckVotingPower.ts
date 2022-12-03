@@ -10,7 +10,7 @@ async function main() {
   const signer = wallet.connect(alchemyProvider);
   const tokenContractAddress = process.env.CONTRACT_GTET ?? ""
   if (tokenContractAddress === undefined || tokenContractAddress === '') {
-    throw "make sure CONTRACT_GTET address is set in the .env file";
+    throw "make sure ballot's contract address is provided as argument";
   }
   const args = process.argv;
   const params = args.slice(2);
