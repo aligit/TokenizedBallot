@@ -1,10 +1,8 @@
 import { ethers } from "hardhat";
 import * as dotenv from 'dotenv'
 import abiTokenizedBallot from "../artifacts/contracts/TokenizedBallot.sol/TokenizedBallot.json";
-import abiGroupTenToken from "../artifacts/contracts/ERC20Votes.sol/GroupTenToken.json";
 
 const tokenizedBallotContractABI = abiTokenizedBallot.abi;
-const groupTenTokenABI = abiGroupTenToken.abi;
 
 dotenv.config()
 
